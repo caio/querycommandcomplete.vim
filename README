@@ -1,0 +1,40 @@
+Query Command Complete
+======================
+
+Vim plugin to suggest completions with the results or an external
+query command.
+
+The original intention is to use it as a mutt query_command wrapper
+to complete addresses in the mail headers, but it can be adapted
+to any other kind of functionality by modifying the exposed setting
+parameters.
+
+Last Change: 2012 Jul 15
+Maintainer: Caio Romão <caioromao@gmail.com>
+License: This file is placed in the public domain
+
+Setup:
+  This plugin exports the completion function QueryCommandComplete,
+  which needs to be set as the complete function (or omni function)
+  in order to work.
+
+  Example:
+      let g:gcc_query_command='abook'
+      au BufRead /tmp/mutt* setlocal omnifunc=QueryCommandComplete
+
+Settings:
+  g:qcc_query_command
+      External command that queries for contacts
+
+  g:qcc_line_separator
+      Separator for each entry in the result from the query
+      default: '\n'
+
+  g:qcc_field_separator
+      Separator for the fields of an entry from the result
+      default: '\t'
+
+  g:qcc_pattern
+      Pattern used to match against the current line to decide
+      whether to call the query command
+      default: '^\(To\|Cc\|Bcc\|From\|Reply-To\):'
