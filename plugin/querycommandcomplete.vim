@@ -52,15 +52,15 @@ let g:loaded_QueryCommandComplete = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! DefaultIfUnset(name, default)
+function! s:DefaultIfUnset(name, default)
     if !exists(a:name)
         let {a:name} = a:default
     endif
 endfunction
 
-call DefaultIfUnset('g:qcc_line_separator', '\n')
-call DefaultIfUnset('g:qcc_field_separator', '\t')
-call DefaultIfUnset('g:qcc_pattern', '^\(To\|Cc\|Bcc\|From\|Reply-To\):')
+call s:DefaultIfUnset('g:qcc_line_separator', '\n')
+call s:DefaultIfUnset('g:qcc_field_separator', '\t')
+call s:DefaultIfUnset('g:qcc_pattern', '^\(To\|Cc\|Bcc\|From\|Reply-To\):')
 
 function! s:MakeCompletionEntry(name, email, other)
     let entry = {}
