@@ -143,3 +143,4 @@ function! QueryCommandComplete(findstart, base)
 endfunction
 
 let &cpo = s:save_cpo
+au FileType mail setlocal omnifunc=QueryCommandComplete
