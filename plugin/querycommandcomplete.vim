@@ -19,7 +19,7 @@
 "   in order to work.
 "
 "   Example:
-"       let g:gcc_query_command='abook'
+"       let g:qcc_query_command='abook'
 "       au BufRead /tmp/mutt* setlocal omnifunc=QueryCommandComplete
 "
 " Settings:
