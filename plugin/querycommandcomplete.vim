@@ -51,6 +51,7 @@ if !exists("g:qcc_query_command")
 
     if len(s:querycmd)
         let g:qcc_query_command = s:querycmd
+        autocmd FileType mail setlocal omnifunc=QueryCommandComplete
     else
         echoerr "QueryCommandComplete: g:qcc_query_command not set!"
         finish
@@ -141,8 +142,5 @@ function! QueryCommandComplete(findstart, base)
         return s:GenerateCompletions(a:findstart, a:base)
     endif
 endfunction
-
-" only set omnifunc if not already set
-autocmd FileType mail if !len(&omnifunc) | setlocal omnifunc=QueryCommandComplete | endif
 
 let &cpo = s:save_cpo
