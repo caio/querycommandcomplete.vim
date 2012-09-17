@@ -49,7 +49,7 @@ if !exists("g:qcc_query_command")
     let s:querycmd = system('mutt -Q query_command 2>/dev/null')
     let s:querycmd = substitute(s:querycmd, '^query_command=\"\(.*\) .%s.\"\n', '\1','')
 
-    if strlen(s:querycmd)
+    if len(s:querycmd)
         let g:qcc_query_command = s:querycmd
     else
         echoerr "QueryCommandComplete: g:qcc_query_command not set!"
@@ -142,5 +142,7 @@ function! QueryCommandComplete(findstart, base)
     endif
 endfunction
 
+" only set omnifunc if not already set
+autocmd FileType mail if !len(&omnifunc) | setlocal omnifunc=QueryCommandComplete | endif
+
 let &cpo = s:save_cpo
-au FileType mail setlocal omnifunc=QueryCommandComplete
