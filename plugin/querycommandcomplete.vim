@@ -25,6 +25,7 @@
 " Settings:
 "   g:qcc_query_command
 "       External command that queries for contacts
+"       default: `mutt -Q query_command`
 "
 "   g:qcc_line_separator
 "       Separator for each entry in the result from the query
@@ -43,9 +44,17 @@ if exists("g:loaded_QueryCommandComplete") || &cp
   finish
 endif
 
+" use mutt query command as default
 if !exists("g:qcc_query_command")
-    echoerr "QueryCommandComplete: g:qcc_query_command not set!"
-    finish
+    let s:querycmd = system('mutt -Q query_command 2>/dev/null')
+    let s:querycmd = substitute(s:querycmd, '^query_command=\"\(.*\) .%s.\"\n', '\1','')
+
+    if len(s:querycmd)
+        let g:qcc_query_command = s:querycmd
+    else
+        echoerr "QueryCommandComplete: g:qcc_query_command not set!"
+        finish
+    endif
 endif
 
 let g:loaded_QueryCommandComplete = 1
@@ -132,5 +141,8 @@ function! QueryCommandComplete(findstart, base)
         return s:GenerateCompletions(a:findstart, a:base)
     endif
 endfunction
+
+" only set omnifunc if not already set
+autocmd FileType mail if !len(&omnifunc) | setlocal omnifunc=QueryCommandComplete | endif
 
 let &cpo = s:save_cpo
