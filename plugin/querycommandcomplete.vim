@@ -51,7 +51,7 @@ endif
 " use mutt query command as default
 if !exists("g:qcc_query_command")
     let s:querycmd = system('mutt -Q query_command 2>/dev/null')
-    let s:querycmd = substitute(s:querycmd, '^query_command=\"\(.*\) .%s.\"\n', '\1','')
+    let s:querycmd = substitute(s:querycmd, '^query_command="\(.*\)\s%s.*"\n', '\1','')
 
     if len(s:querycmd)
         let g:qcc_query_command = s:querycmd
@@ -107,10 +107,6 @@ function! s:GenerateCompletions(findstart, base)
         return s:FindStartingIndex()
     endif
 
-    if a:base =~ '^ *$'
-        return []
-    endif
-
     let results = []
     let cmd = g:qcc_query_command . ' ' . shellescape(a:base)
     let lines = split(system(cmd), g:qcc_line_separator)
@@ -139,10 +135,12 @@ function! s:GenerateCompletions(findstart, base)
 endfunction
 
 function! QueryCommandComplete(findstart, base)
-    let cur_line = getline(line('.'))
+    let l = line('.')
 
-    " TODO: Figure out a way to handle multiline
-    if cur_line =~ g:qcc_pattern
+    while l > 1 && getline(l) !~ '^[^:]*:[^:]*$' && getline(l - 1) !~ '^\s*$'
+        let l -= 1
+    endwhile
+    if getline(l) =~ g:qcc_pattern
         return s:GenerateCompletions(a:findstart, a:base)
     endif
 endfunction
