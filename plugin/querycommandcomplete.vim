@@ -139,7 +139,12 @@ function! s:GenerateCompletions(findstart, base)
 endfunction
 
 function! QueryCommandComplete(findstart, base)
-    if getline('.') =~ g:qcc_pattern
+    let l = line('.')
+
+    while l > 1 && getline(l) !~ ':' && getline(l - 1) !~ '^\s*$'
+        let l -= 1
+    endwhile
+    if getline(l) =~ g:qcc_pattern
         return s:GenerateCompletions(a:findstart, a:base)
     endif
 endfunction
