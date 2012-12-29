@@ -48,7 +48,7 @@ if exists("g:loaded_QueryCommandComplete") || &cp
   finish
 endif
 
-" use mutt query command as default
+" Try to use mutt's query_command by default if nothing is set
 if !exists("g:qcc_query_command")
     let s:querycmd = system('mutt -Q query_command 2>/dev/null')
     let s:querycmd = substitute(s:querycmd, '^query_command="\(.*\)"\n', '\1','')
