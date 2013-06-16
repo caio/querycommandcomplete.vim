@@ -9,12 +9,12 @@
 " to any other kind of functionality by modifying the exposed setting
 " parameters.
 "
-" Last Change: 2012 Dec 29
-" Author: Caio Romão <caioromao@gmail.com>
+" Last Change: 2013 Jun 16
+" Author: Caio Romão (http://caioromao.com)
 " License: This file is placed in the public domain
 " Contributors:
-"   Brian Henderson <https://github.com/bhenderson>
-"   Mark Stillwell <https://github.com/marklee77>
+"   Brian Henderson https://github.com/bhenderson
+"   Mark Stillwell  https://github.com/marklee77
 "
 " Setup:
 "   This plugin exports the completion function QueryCommandComplete,
@@ -56,6 +56,25 @@
 "       This provides finer control over the recursion, which
 "       is useful if calling the completion on really big files.
 "       default: '.*'
+"
+"   g:qcc_format_word
+"       Format string to be used when building the word field
+"       of the completion (i.e.: the final result, what gets fed into
+"       the current line when you select an option)
+"       default: '${0} <${1}>' (as in: FirstName <email@domain.com>)
+"
+"   g:qcc_format_abbr
+"       Format string to be used when building the abbreviation
+"       for the completion menu (i.e.: the first row in the completion
+"       menu).
+"       default: '${0}'
+"
+"   g:qcc_format_menu
+"       Format string for the optional second column of the completion
+"       menu.
+"       default: '${2}'
+"
+
 
 if exists("g:loaded_QueryCommandComplete") || &cp
   finish
