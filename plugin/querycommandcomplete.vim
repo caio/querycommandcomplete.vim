@@ -91,12 +91,49 @@ call s:DefaultIfUnset('g:qcc_field_separator', '\t')
 call s:DefaultIfUnset('g:qcc_pattern', '^\(To\|Cc\|Bcc\|From\|Reply-To\):')
 call s:DefaultIfUnset('g:qcc_multiline', 0)
 call s:DefaultIfUnset('g:qcc_multiline_pattern', '.*')
+call s:DefaultIfUnset('g:qcc_format_word', '${0} <${1}>')
+call s:DefaultIfUnset('g:qcc_format_abbr', '${0}')
+call s:DefaultIfUnset('g:qcc_format_menu', '${2}')
 
-function! s:MakeCompletionEntry(name, email, other)
+" Given a format string where the placeholders are in the format
+" '${index}' and index is a valid index the the given 'fields'
+" argument, this function returns a string with all placeholders
+" replaced by the corresponding data in the fields list.
+" FIXME I can't help but think there's a standard way to do this
+"       but I failed finding it. Please call me a dumbass if you
+"       know The Easy Way.
+function! s:ApplyFieldsToFormatString(fields, format)
+    let result = a:format
+
+    while 1
+        let placeholder = matchstr(result, '${[0-9]}')
+
+        if (empty(placeholder))
+            break
+        endif
+
+        let index = matchstr(placeholder, '[0-9]')
+
+        " If ${NUMBER} is not a valid index in a:fields,
+        " use '' as a fallback.
+        " FIXME Decide whether to warn/err/whatever here
+        let content = ''
+        if (len(a:fields) > index)
+            let content = a:fields[index]
+        endif
+
+        let result = substitute(result, placeholder, content, 'g')
+
+    endwhile
+
+    return result
+endfunction
+
+function! s:MakeCompletionEntry(fields)
     let entry = {}
-    let entry.word = a:name . ' <' . a:email . '>'
-    let entry.abbr = a:name
-    let entry.menu = a:other
+    let entry.word = s:ApplyFieldsToFormatString(a:fields, g:qcc_format_word)
+    let entry.abbr = s:ApplyFieldsToFormatString(a:fields, g:qcc_format_abbr)
+    let entry.menu = s:ApplyFieldsToFormatString(a:fields, g:qcc_format_menu)
     let entry.icase = 1
     return entry
 endfunction
@@ -134,21 +171,9 @@ function! s:GenerateCompletions(findstart, base)
     for my_line in lines
         let fields = split(my_line, g:qcc_field_separator)
 
-        if (len(fields) < 2)
-            continue
-        endif
+        let entry = s:MakeCompletionEntry(fields)
 
-        let email = fields[0]
-        let name = fields[1]
-        let other = ''
-
-        if (len(fields) > 2)
-            let other = fields[2]
-        endif
-
-        let contact = s:MakeCompletionEntry(name, email, other)
-
-        call add(results, contact)
+        call add(results, entry)
     endfor
 
     return results
