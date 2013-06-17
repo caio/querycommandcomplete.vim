@@ -15,6 +15,7 @@
 " Contributors:
 "   Brian Henderson https://github.com/bhenderson
 "   Mark Stillwell  https://github.com/marklee77
+"   Rui Abreu Ferreira http://ruiabreu.org
 "
 " Setup:
 "   This plugin exports the completion function QueryCommandComplete,
@@ -27,6 +28,9 @@
 "       au BufRead /tmp/mutt* setlocal omnifunc=QueryCommandComplete
 "
 " Settings:
+"   Note: Overriding settings on a buffer-basis is supported. So
+"         b:qcc_query_command takes precedence over g:qcc_query_command
+"
 "   g:qcc_query_command
 "       External command that queries for contacts
 "       If empty, QueryCommandComplete tries to guess what command to
@@ -80,8 +84,22 @@ if exists("g:loaded_QueryCommandComplete") || &cp
   finish
 endif
 
+function! s:GetSetting(name)
+    let global_option = 'g:qcc_' . a:name
+    let local_option = 'b:qcc_' . a:name
+
+    let result = ''
+    if exists(local_option)
+        let result = {local_option}
+    elseif exists(global_option)
+        let result = {global_option}
+    endif
+
+    return result
+endfunction
+
 " Try to use mutt's query_command by default if nothing is set
-if !exists("g:qcc_query_command")
+if empty(s:GetSetting('query_command'))
     let s:querycmd = system('mutt -Q query_command 2>/dev/null')
     let s:querycmd = substitute(s:querycmd, '^query_command="\(.*\)"\n', '\1','')
 
@@ -150,9 +168,9 @@ endfunction
 
 function! s:MakeCompletionEntry(fields)
     let entry = {}
-    let entry.word = s:ApplyFieldsToFormatString(a:fields, g:qcc_format_word)
-    let entry.abbr = s:ApplyFieldsToFormatString(a:fields, g:qcc_format_abbr)
-    let entry.menu = s:ApplyFieldsToFormatString(a:fields, g:qcc_format_menu)
+    let entry.word = s:ApplyFieldsToFormatString(a:fields, s:GetSetting('format_word'))
+    let entry.abbr = s:ApplyFieldsToFormatString(a:fields, s:GetSetting('format_abbr'))
+    let entry.menu = s:ApplyFieldsToFormatString(a:fields, s:GetSetting('format_menu'))
     let entry.icase = 1
     return entry
 endfunction
@@ -180,7 +198,7 @@ function! s:GenerateCompletions(findstart, base)
     endif
 
     let results = []
-    let cmd = g:qcc_query_command
+    let cmd = s:GetSetting('query_command')
     if cmd !~ '%s'
         let cmd .= ' %s'
     endif
