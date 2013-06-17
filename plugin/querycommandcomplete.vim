@@ -98,21 +98,6 @@ function! s:GetSetting(name)
     return result
 endfunction
 
-" Try to use mutt's query_command by default if nothing is set
-if empty(s:GetSetting('query_command'))
-    let s:querycmd = system('mutt -Q query_command 2>/dev/null')
-    let s:querycmd = substitute(s:querycmd, '^query_command="\(.*\)"\n', '\1','')
-
-    if len(s:querycmd)
-        let g:qcc_query_command = s:querycmd
-        let g:qcc_multiline = 1
-        autocmd FileType mail setlocal omnifunc=QueryCommandComplete
-    else
-        echoerr "QueryCommandComplete: g:qcc_query_command not set!"
-        finish
-    endif
-endif
-
 let g:loaded_QueryCommandComplete = 1
 let s:save_cpo = &cpo
 set cpo&vim
@@ -230,8 +215,26 @@ function! s:ShouldGenerateCompletions(line_number)
     return s:ShouldGenerateCompletions(a:line_number - 1)
 endfunction
 
+function! s:CheckSettings()
+    " Try to use mutt's query_command by default if nothing is set
+    if empty(s:GetSetting('query_command'))
+        let s:querycmd = system('mutt -Q query_command 2>/dev/null')
+        let s:querycmd = substitute(s:querycmd, '^query_command="\(.*\)"\n', '\1','')
+
+        if len(s:querycmd)
+            let g:qcc_query_command = s:querycmd
+            let g:qcc_multiline = 1
+            autocmd FileType mail setlocal omnifunc=QueryCommandComplete
+        else
+            echoerr "QueryCommandComplete: g:qcc_query_command not set!"
+            return 0
+        endif
+    endif
+    return 1
+endfunction
+
 function! QueryCommandComplete(findstart, base)
-    if s:ShouldGenerateCompletions(line('.'))
+    if s:CheckSettings() && s:ShouldGenerateCompletions(line('.'))
         return s:GenerateCompletions(a:findstart, a:base)
     endif
 endfunction
