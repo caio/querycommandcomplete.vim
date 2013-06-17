@@ -61,13 +61,13 @@
 "       Format string to be used when building the word field
 "       of the completion (i.e.: the final result, what gets fed into
 "       the current line when you select an option)
-"       default: '${0} <${1}>' (as in: FirstName <email@domain.com>)
+"       default: '${1} <${0}>' (as in: FirstName <email@domain.com>)
 "
 "   g:qcc_format_abbr
 "       Format string to be used when building the abbreviation
 "       for the completion menu (i.e.: the first row in the completion
 "       menu).
-"       default: '${0}'
+"       default: '${1}'
 "
 "   g:qcc_format_menu
 "       Format string for the optional second column of the completion
@@ -110,8 +110,8 @@ call s:DefaultIfUnset('g:qcc_field_separator', '\t')
 call s:DefaultIfUnset('g:qcc_pattern', '^\(To\|Cc\|Bcc\|From\|Reply-To\):')
 call s:DefaultIfUnset('g:qcc_multiline', 0)
 call s:DefaultIfUnset('g:qcc_multiline_pattern', '.*')
-call s:DefaultIfUnset('g:qcc_format_word', '${0} <${1}>')
-call s:DefaultIfUnset('g:qcc_format_abbr', '${0}')
+call s:DefaultIfUnset('g:qcc_format_word', '${1} <${0}>')
+call s:DefaultIfUnset('g:qcc_format_abbr', '${1}')
 call s:DefaultIfUnset('g:qcc_format_menu', '${2}')
 
 " Given a format string where the placeholders are in the format
